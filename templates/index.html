@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAC — Python Accounting</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- ── Background canvas ──────────────────────────────────────────────── -->
+<div class="bg-canvas" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- ── Toast container ──────────────────────────────────────────────────── -->
+<div id="toastContainer" aria-live="polite"></div>
+
+<div class="app-wrapper">
+
+  <!-- ── HERO HEADER ─────────────────────────────────────────────────────── -->
+  <header>
+    <div class="logo-row">
+      <div class="logo-icon" aria-hidden="true">◈</div>
+      <span class="logo-wordmark">PAC</span>
+      <span class="logo-badge">v2.0</span>
+    </div>
+
+    <h1 class="hero-title">PAC</h1>
+    <p class="hero-sub">Intelligent Journal Entry System</p>
+
+    <div class="hero-tag">
+      <span class="dot"></span>
+      Natural language accounting powered by Python
+    </div>
+  </header>
+
+  <!-- ── MAIN GRID ────────────────────────────────────────────────────────── -->
+  <div class="main-grid">
+
+    <!-- ── LEFT COLUMN ─────────────────────────────────────────────────── -->
+    <div class="left-col" style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- INPUT CARD -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-label">
+            <span class="indicator"></span>
+            Transaction Input
+          </span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted)">Ctrl + Enter to generate</span>
+        </div>
+
+        <div class="input-section">
+          <div class="input-wrapper">
+            <textarea
+              id="transactionInput"
+              placeholder="Enter accounting transaction…&#10;&#10;e.g.  Bought furniture for cash 20000&#10;       Paid salary to staff ₹15,000&#10;       Received commission from Ram 5000"
+              spellcheck="false"
+              autocomplete="off"
+            ></textarea>
+            <span class="shortcut-hint">⌘↵</span>
+          </div>
+
+          <div class="btn-row">
+            <button id="generateBtn" class="btn btn-primary">
+              <span class="spinner"></span>
+              <span class="btn-text">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                Generate Entry
+              </span>
+            </button>
+            <button id="clearBtn" class="btn btn-secondary">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+              Clear
+            </button>
+            <button id="copyBtn" class="btn btn-ghost">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT CARD -->
+      <div id="outputSection" class="card">
+        <div class="card-header">
+          <span class="card-label">
+            <span class="indicator" style="background:var(--teal);box-shadow:0 0 8px var(--teal)"></span>
+            Journal Entry
+          </span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted)">Double-entry bookkeeping</span>
+        </div>
+
+        <div class="output-body" id="outputBody"></div>
+
+        <div class="output-actions">
+          <button class="btn btn-ghost" onclick="document.getElementById('copyBtn').click()" style="font-size:12px;padding:8px 14px">
+            Copy Entry
+          </button>
+        </div>
+      </div>
+
+      <!-- EXAMPLES CARD -->
+      <div class="card" style="animation:fadeUp 0.8s var(--ease) 0.6s both">
+        <div class="card-header">
+          <span class="card-label">
+            <span class="indicator" style="background:rgba(156,120,255,0.8);box-shadow:0 0 8px rgba(156,120,255,0.5)"></span>
+            Example Transactions
+          </span>
+        </div>
+        <div style="padding:16px;display:flex;flex-wrap:wrap;gap:8px">
+          <!-- example chips -->
+          <button class="example-chip" onclick="setExample('Bought furniture for cash 20000')">🪑 Furniture for cash</button>
+          <button class="example-chip" onclick="setExample('Paid salary to employees 50000')">💼 Salary paid</button>
+          <button class="example-chip" onclick="setExample('Received commission from Ram 8000')">💰 Commission received</button>
+          <button class="example-chip" onclick="setExample('Sold goods to Shyam for 35000')">📦 Goods sold</button>
+          <button class="example-chip" onclick="setExample('Invested cash in business 200000')">🏦 Capital invested</button>
+          <button class="example-chip" onclick="setExample('Purchased machinery by cheque 80000')">⚙️ Machinery by cheque</button>
+          <button class="example-chip" onclick="setExample('Paid rent for office 12000')">🏢 Rent paid</button>
+          <button class="example-chip" onclick="setExample('Withdrew cash for personal use 5000')">🏧 Personal withdrawal</button>
+        </div>
+      </div>
+
+    </div><!-- /left-col -->
+
+    <!-- ── SIDEBAR ──────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+
+      <!-- Stats -->
+      <div class="card" style="border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-bottom:none">
+        <div class="stats-row">
+          <div class="stat-item">
+            <div class="stat-value" id="statCount">0</div>
+            <div class="stat-label">Entries</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statTotal" style="font-size:15px">₹0</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entries list -->
+      <div class="card" style="border-radius:0 0 var(--radius-lg) var(--radius-lg);border-top:none">
+        <div class="card-header" style="border-top:1px solid var(--border)">
+          <span class="card-label">
+            <span class="indicator" style="background:var(--cyan);box-shadow:0 0 8px var(--cyan)"></span>
+            Recent Entries
+          </span>
+          <button id="clearAllBtn" class="btn btn-ghost" style="font-size:11px;padding:5px 10px">
+            Clear all
+          </button>
+        </div>
+
+        <div class="entries-list" id="entriesList">
+          <div class="empty-state">
+            <div class="empty-icon">◌</div>
+            No entries yet.<br>Generate your first one!
+          </div>
+        </div>
+      </div>
+
+      <!-- Info card -->
+      <div class="card" style="margin-top:16px;animation:fadeUp 0.8s var(--ease) 0.7s both">
+        <div class="card-header">
+          <span class="card-label">
+            <span class="indicator" style="background:rgba(255,180,0,0.8);box-shadow:0 0 8px rgba(255,180,0,0.4)"></span>
+            Accounting Rules
+          </span>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div class="rule-card-item">
+            <div class="rule-type">Real Accounts</div>
+            <div class="rule-desc">Debit what comes in · Credit what goes out</div>
+          </div>
+          <div class="rule-card-item">
+            <div class="rule-type">Personal Accounts</div>
+            <div class="rule-desc">Debit the receiver · Credit the giver</div>
+          </div>
+          <div class="rule-card-item">
+            <div class="rule-type">Nominal Accounts</div>
+            <div class="rule-desc">Debit all expenses & losses · Credit all incomes & gains</div>
+          </div>
+        </div>
+      </div>
+
+    </aside><!-- /sidebar -->
+
+  </div><!-- /main-grid -->
+
+</div><!-- /app-wrapper -->
+
+<style>
+/* Inline micro-styles for example chips & rule cards */
+.example-chip {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+  font-family: var(--sans);
+  font-size: 12px;
+  padding: 6px 13px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+.example-chip:hover {
+  background: var(--blue-dim);
+  border-color: rgba(59,140,255,0.35);
+  color: #a8c8ff;
+  transform: translateY(-1px);
+}
+.rule-card-item {
+  padding: 10px 12px;
+  background: rgba(6,12,22,0.5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.rule-type {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 4px;
+}
+.rule-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+</style>
+
+<script>
+function setExample(tx) {
+  document.getElementById('transactionInput').value = tx;
+  document.getElementById('transactionInput').focus();
+}
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
